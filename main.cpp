@@ -53,9 +53,10 @@ int main(int argc, char *argv[])
     a8[0][0] = std::complex<double>(1, 1);
     a8[0][1] = std::complex<double>(0, 1);
     a8[1][0] = std::complex<double>(0, -1);
+    std::vector<std::vector<double>> a9{{1, 2, 3, 4}, {2, 1, 2, 3}, {3, 2, 1, 2}, {4, 3, 2, 1}};
 
 //    std::vector<std::vector<double>> q1, r1;
-//    bool qr1 = solveQR(a6, q1, r1, 0);
+//    bool qr1 = solveQR(a9, q1, r1, 0);
 //    std::vector<std::vector<double>> qri1 = q1*transpose(q1);
 //    std::vector<std::vector<double>> aa1 = q1*r1;
 
@@ -72,10 +73,9 @@ int main(int argc, char *argv[])
 //    std::vector<std::vector<double>> H1;
 //    bool hh1 = householderHessenberg(a6, H1);
 
-    std::vector<std::vector<double>> a9{{1, 2, 3, 4}, {2, 1, 2, 3}, {3, 2, 1, 2}, {4, 3, 2, 1}};
     std::vector<double> eigenVal1;
     std::vector<std::vector<double>> eigenVec1;
-    bool evd1 = solveEVD(a9, eigenVal1, eigenVec1);
+    bool evd1 = solveEVD(a3, eigenVal1, eigenVec1);
 
 //    std::vector<std::complex<double>> eigenVal2;
 //    std::vector<std::vector<std::complex<double>>> eigenVec2;

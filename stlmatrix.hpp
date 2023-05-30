@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <complex>
+#include <algorithm>
 
 #define MULTIPLY_LIMIT_LEN 128
 #define EPS 1E-12
@@ -1018,27 +1019,28 @@ bool solveEVD(const std::vector<std::vector<T>> &a, std::vector<T> &D, std::vect
     }
 
     // Iterate by givensQR
-    std::vector<T> eigen_values(H.size());
-    std::vector<T> eigen_values_new(H.size());
-    for(size_t i = 0; i < H.size(); ++i){
+    int len = a.size();
+    std::vector<T> eigen_values(len);
+    std::vector<T> eigen_values_new(len);
+    for(int i = 0; i < len; ++i){
         eigen_values[i] = H[i][i];
     }
 
-    V = eye(H.size(), T(1));
-    std::vector<std::vector<T>> Q, R;
+    std::vector<std::vector<T>> Q, R, eigen_vector;
+    eigen_vector = eye(len, T(1));
     int max_iteration = 1000;
-    double delta = 0.0001;
+    double delta = 0.000001;
     for(int i = 0; i < max_iteration; ++i){
         givensQR(H, Q, R);
         H = R * Q;
-        V = V * Q;
+        eigen_vector = eigen_vector * Q;
 
-        for(size_t i = 0; i < H.size(); ++i){
+        for(int i = 0; i < len; ++i){
             eigen_values_new[i] = H[i][i];
         }
 
         double delta_sum = 0;
-        for(size_t i = 0; i < eigen_values.size(); ++i){
+        for(int i = 0; i < len; ++i){
             delta_sum += abs(eigen_values_new[i] - eigen_values[i]) / abs(eigen_values_new[i] + eigen_values[i]) / 2;
         }
 
@@ -1046,9 +1048,24 @@ bool solveEVD(const std::vector<std::vector<T>> &a, std::vector<T> &D, std::vect
         if(delta_sum < delta){
             break;
         }
+        eigen_values = eigen_values_new;
     }
 
-    D = eigen_values_new;
+    // Sort D and V by eigen value
+    std::vector<int> eigen_value_index(len);
+    for(int i = 0; i < len; ++i){
+        eigen_value_index[i] = i;
+    }
+    std::sort(eigen_value_index.begin(), eigen_value_index.end(), [&](int x, int y){ return eigen_values_new[x] < eigen_values_new[y]; });
+
+    D.resize(len);
+    V.resize(len, std::vector<T>(len));
+    for(int i = 0; i < len; ++i){
+        D[i] = eigen_values_new[eigen_value_index[i]];
+        for(int j = 0; j < len; ++j){
+            V[j][i] = eigen_vector[j][eigen_value_index[i]];
+        }
+    }
 
     return true;
 }
@@ -1061,6 +1078,9 @@ bool solveSVD(const std::vector<std::vector<T>> &a, std::vector<std::vector<T>> 
 
     // todo, using EVD or JacobiSVD
 
+
+
+    return true;
 }
 
 
