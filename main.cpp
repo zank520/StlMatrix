@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
 //    std::vector<std::vector<std::complex<double>>> trans1 = transpose(a2);
 
-    std::vector<std::vector<double>> a3{{-2, 1, 1}, {0, 2, 0}, {-4, 1, 3}};
+    std::vector<std::vector<double>> a3{{1, 2, 3}, {5, 8, 7}, {1, 1, 1}};
     std::vector<std::vector<std::complex<double>>> a4{{1.2, 3.5, -2.4}, {0.8, -7.9, 3.2}, {-4.1, -0.9, -0.9}};
     a4[0][0] = std::complex<double>(5.5, -3.7);
 //    std::vector<std::vector<double>> inv1 = inverse(a3);
@@ -69,12 +69,17 @@ int main(int argc, char *argv[])
 //    std::vector<std::vector<std::complex<double>>> qrii = q3*transpose(q3);
 //    std::vector<std::vector<std::complex<double>>> aa = q3*r3;
 
-    std::vector<std::vector<double>> H1;
-    bool hh1 = householderHessenberg(a6, H1);
+//    std::vector<std::vector<double>> H1;
+//    bool hh1 = householderHessenberg(a6, H1);
 
-//    std::vector<double> eigenVal;
-//    std::vector<std::vector<double>> eigenVec;
-//    bool evd1 = solveEVD(a3, eigenVal, eigenVec);
+    std::vector<std::vector<double>> a9{{1, 2, 3, 4}, {2, 1, 2, 3}, {3, 2, 1, 2}, {4, 3, 2, 1}};
+    std::vector<double> eigenVal1;
+    std::vector<std::vector<double>> eigenVec1;
+    bool evd1 = solveEVD(a9, eigenVal1, eigenVec1);
+
+//    std::vector<std::complex<double>> eigenVal2;
+//    std::vector<std::vector<std::complex<double>>> eigenVec2;
+//    bool evd2 = solveEVD(a4, eigenVal2, eigenVec2);
 
     QueryPerformanceCounter(&endTime);
     int timeCost = (double)(endTime.QuadPart - beginTime.QuadPart) * 1e6 / (double)freq.QuadPart;

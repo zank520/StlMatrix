@@ -1010,13 +1010,45 @@ bool solveEVD(const std::vector<std::vector<T>> &a, std::vector<T> &D, std::vect
         return false;
     }
 
+    // evd by qr
     // Change origin mastrix to hessenberg matrix
     std::vector<std::vector<T>> H;
     if(!householderHessenberg(a, H)){
         return false;
     }
 
-    // todo
+    // Iterate by givensQR
+    std::vector<T> eigen_values(H.size());
+    std::vector<T> eigen_values_new(H.size());
+    for(size_t i = 0; i < H.size(); ++i){
+        eigen_values[i] = H[i][i];
+    }
+
+    V = eye(H.size(), T(1));
+    std::vector<std::vector<T>> Q, R;
+    int max_iteration = 1000;
+    double delta = 0.0001;
+    for(int i = 0; i < max_iteration; ++i){
+        givensQR(H, Q, R);
+        H = R * Q;
+        V = V * Q;
+
+        for(size_t i = 0; i < H.size(); ++i){
+            eigen_values_new[i] = H[i][i];
+        }
+
+        double delta_sum = 0;
+        for(size_t i = 0; i < eigen_values.size(); ++i){
+            delta_sum += abs(eigen_values_new[i] - eigen_values[i]) / abs(eigen_values_new[i] + eigen_values[i]) / 2;
+        }
+
+        delta_sum /= (double)eigen_values.size();
+        if(delta_sum < delta){
+            break;
+        }
+    }
+
+    D = eigen_values_new;
 
     return true;
 }
