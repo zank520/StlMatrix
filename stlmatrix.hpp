@@ -377,9 +377,41 @@ std::vector<T> operator * (const std::vector<std::vector<T>> &a, const std::vect
     return res;
 }
 
+// [x x  * x   -> [y y
+//  x x]           y y]
+template <class T1, class T2>
+std::vector<std::vector<T1>> operator * (const std::vector<std::vector<T1>> &a, T2 b){
+    std::vector<std::vector<T1>> res = a;
+
+    for(size_t i = 0; i < res.size(); ++i){
+        for(size_t j = 0; j < res[i].size(); ++j){
+            res[i][j] *= b;
+        }
+    }
+    return res;
+}
+
 template <class T>
 std::vector<std::vector<T>> operator / (const std::vector<std::vector<T>> &a, const std::vector<std::vector<T>> &b){
     return rightDivide(a, b);
+}
+
+// [x x  / x   -> [y y
+//  x x]           y y]
+template <class T1, class T2>
+std::vector<std::vector<T1>> operator / (const std::vector<std::vector<T1>> &a, T2 b){
+    std::vector<std::vector<T1>> res = a;
+
+    if(b == T2(0)){
+        return res;
+    }
+
+    for(size_t i = 0; i < res.size(); ++i){
+        for(size_t j = 0; j < res[i].size(); ++j){
+            res[i][j] /= b;
+        }
+    }
+    return res;
 }
 
 template <class T>
