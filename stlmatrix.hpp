@@ -40,13 +40,13 @@ template <class T>
 std::vector<std::vector<T>> inverseLU(const std::vector<std::vector<T>> &a);
 
 template <class T>
-std::vector<std::vector<T>> sqrtm(const std::vector<std::vector<T>> &a);
+std::vector<std::vector<T>> sqrtMatrix(const std::vector<std::vector<T>> &a);
 
 template <class T>
-std::vector<std::vector<T>> sinhm(const std::vector<std::vector<T>> &a);
+std::vector<std::vector<T>> sinhMatrix(const std::vector<std::vector<T>> &a);
 
 template <class T>
-std::vector<std::vector<T>> coshm(const std::vector<std::vector<T>> &a);
+std::vector<std::vector<T>> coshMatrix(const std::vector<std::vector<T>> &a);
 
 template <class T>
 double norm(const std::vector<std::vector<T>> &a, int type = 2);
@@ -521,8 +521,8 @@ std::vector<std::vector<T>> inverseGE(const std::vector<std::vector<T>> &a){
         return res;
     }
 
-    int n = (int)a.size();
-    res = eye(n, T(1));
+    size_t n = a.size();
+    res = eye((int)n, T(1));
     std::vector<std::vector<T>> help = a;
 
     // Complete pivot Gaussian elimination
@@ -603,10 +603,9 @@ std::vector<std::vector<T>> inverseLU(const std::vector<std::vector<T>> &a){
     return res;
 }
 
-// B * B = A, to calculate B
-// A is a square matrix
+// B * B = A, to calculate B, A is a square matrix
 template <class T>
-std::vector<std::vector<T>> sqrtm(const std::vector<std::vector<T>> &a){
+std::vector<std::vector<T>> sqrtMatrix(const std::vector<std::vector<T>> &a){
     std::vector<std::vector<T>> res;
     if(a.size() == 0 || a[0].size() != a.size()){
         return res;
@@ -630,7 +629,7 @@ std::vector<std::vector<T>> sqrtm(const std::vector<std::vector<T>> &a){
 
 // Calcualte sinh of a square matrix
 template <class T>
-std::vector<std::vector<T>> sinhm(const std::vector<std::vector<T>> &a){
+std::vector<std::vector<T>> sinhMatrix(const std::vector<std::vector<T>> &a){
     std::vector<std::vector<T>> res;
     if(a.size() == 0 || a[0].size() != a.size()){
         return res;
@@ -654,7 +653,7 @@ std::vector<std::vector<T>> sinhm(const std::vector<std::vector<T>> &a){
 
 // Calcualte cosh of a square matrix
 template <class T>
-std::vector<std::vector<T>> coshm(const std::vector<std::vector<T>> &a){
+std::vector<std::vector<T>> coshMatrix(const std::vector<std::vector<T>> &a){
     std::vector<std::vector<T>> res;
     if(a.size() == 0 || a[0].size() != a.size()){
         return res;
@@ -667,7 +666,7 @@ std::vector<std::vector<T>> coshm(const std::vector<std::vector<T>> &a){
         return res;
     }
 
-    std::vector<std::vector<T>> diagEigenValues(D.size(), std::vector<T>(D.size(), T(1)));
+    std::vector<std::vector<T>> diagEigenValues(D.size(), std::vector<T>(D.size(), T(1))); // cosh(0) is 1
     for(size_t i = 0; i < D.size(); ++i){
         diagEigenValues[i][i] = cosh(D[i]);
     }
@@ -1116,12 +1115,12 @@ bool solveEVD(const std::vector<std::vector<T>> &a, std::vector<T> &D, std::vect
         H = R * Q;
         eigen_vector = eigen_vector * Q;
 
-        for(int i = 0; i < len; ++i){
+        for(size_t i = 0; i < len; ++i){
             eigen_values_new[i] = H[i][i];
         }
 
         double delta_sum(0);
-        for(int i = 0; i < len; ++i){
+        for(size_t i = 0; i < len; ++i){
             delta_sum += abs(eigen_values_new[i] - eigen_values[i]) / abs(eigen_values_new[i] + eigen_values[i]) * 2;
         }
 
