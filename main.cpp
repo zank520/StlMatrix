@@ -73,13 +73,16 @@ int main(int argc, char *argv[])
 //    std::vector<std::vector<double>> H1;
 //    bool hh1 = householderHessenberg(a6, H1);
 
-    std::vector<double> eigenVal1;
-    std::vector<std::vector<double>> eigenVec1;
-    bool evd1 = solveEVD(a3, eigenVal1, eigenVec1);
+//    std::vector<double> eigenVal1;
+//    std::vector<std::vector<double>> eigenVec1;
+//    bool evd1 = solveEVD(a3, eigenVal1, eigenVec1);
 
-//    std::vector<std::complex<double>> eigenVal2;
-//    std::vector<std::vector<std::complex<double>>> eigenVec2;
-//    bool evd2 = solveEVD(a4, eigenVal2, eigenVec2);
+    std::vector<std::complex<double>> eigenVal2;
+    std::vector<std::vector<std::complex<double>>> eigenVec2;
+    bool evd2 = solveEVD(a4, eigenVal2, eigenVec2);
+
+//    std::vector<std::vector<double>> a10{{-3, 2}, {-10, 6}};
+//    std::vector<std::vector<double>> sqrtma = sqrtm(a10);
 
     QueryPerformanceCounter(&endTime);
     int timeCost = (double)(endTime.QuadPart - beginTime.QuadPart) * 1e6 / (double)freq.QuadPart;

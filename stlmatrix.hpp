@@ -40,6 +40,15 @@ template <class T>
 std::vector<std::vector<T>> inverseLU(const std::vector<std::vector<T>> &a);
 
 template <class T>
+std::vector<std::vector<T>> sqrtm(const std::vector<std::vector<T>> &a);
+
+template <class T>
+std::vector<std::vector<T>> sinhm(const std::vector<std::vector<T>> &a);
+
+template <class T>
+std::vector<std::vector<T>> coshm(const std::vector<std::vector<T>> &a);
+
+template <class T>
 double norm(const std::vector<std::vector<T>> &a, int type = 2);
 
 template <class T>
@@ -512,7 +521,7 @@ std::vector<std::vector<T>> inverseGE(const std::vector<std::vector<T>> &a){
         return res;
     }
 
-    size_t n = a.size();
+    int n = (int)a.size();
     res = eye(n, T(1));
     std::vector<std::vector<T>> help = a;
 
@@ -559,10 +568,10 @@ std::vector<std::vector<T>> inverseGE(const std::vector<std::vector<T>> &a){
         }
     }
 
-    // Now res is [1 x  change it to [1 0
-    //             0 1]               0 1]
+    // Now help is [1 x  change it to [1 0
+    //              0 1]               0 1]
     for(int i = n - 1; i >= 0; --i){
-        for(size_t j = n - 1; j > i; --j){
+        for(int j = n - 1; j > i; --j){
             T temp = -help[i][j];
             for(size_t k = 0; k < n; ++k){
                 res[i][k] += temp*res[j][k];
@@ -581,7 +590,6 @@ std::vector<std::vector<T>> inverseLU(const std::vector<std::vector<T>> &a){
         return res;
     }
 
-    size_t n = a.size();
     std::vector<std::vector<T>> L;
     std::vector<std::vector<T>> U;
     if(!solveLU(a, L, U)){
@@ -592,6 +600,79 @@ std::vector<std::vector<T>> inverseLU(const std::vector<std::vector<T>> &a){
     std::vector<std::vector<T>> invU = inverseUpper(U);
     res = invU * invL;
 
+    return res;
+}
+
+// B * B = A, to calculate B
+// A is a square matrix
+template <class T>
+std::vector<std::vector<T>> sqrtm(const std::vector<std::vector<T>> &a){
+    std::vector<std::vector<T>> res;
+    if(a.size() == 0 || a[0].size() != a.size()){
+        return res;
+    }
+
+    // Get the diagonal matrix of a
+    std::vector<T> D;
+    std::vector<std::vector<T>> V;
+    if(!solveEVD(a, D, V)){
+        return res;
+    }
+
+    std::vector<std::vector<T>> diagEigenValues(D.size(), std::vector<T>(D.size(), T(0)));
+    for(size_t i = 0; i < D.size(); ++i){
+        diagEigenValues[i][i] = sqrt(D[i]);
+    }
+
+    res = V * diagEigenValues * inverse(V);
+    return res;
+}
+
+// Calcualte sinh of a square matrix
+template <class T>
+std::vector<std::vector<T>> sinhm(const std::vector<std::vector<T>> &a){
+    std::vector<std::vector<T>> res;
+    if(a.size() == 0 || a[0].size() != a.size()){
+        return res;
+    }
+
+    // Get the diagonal matrix of a
+    std::vector<T> D;
+    std::vector<std::vector<T>> V;
+    if(!solveEVD(a, D, V)){
+        return res;
+    }
+
+    std::vector<std::vector<T>> diagEigenValues(D.size(), std::vector<T>(D.size(), T(0)));
+    for(size_t i = 0; i < D.size(); ++i){
+        diagEigenValues[i][i] = sinh(D[i]);
+    }
+
+    res = V * diagEigenValues * inverse(V);
+    return res;
+}
+
+// Calcualte cosh of a square matrix
+template <class T>
+std::vector<std::vector<T>> coshm(const std::vector<std::vector<T>> &a){
+    std::vector<std::vector<T>> res;
+    if(a.size() == 0 || a[0].size() != a.size()){
+        return res;
+    }
+
+    // Get the diagonal matrix of a
+    std::vector<T> D;
+    std::vector<std::vector<T>> V;
+    if(!solveEVD(a, D, V)){
+        return res;
+    }
+
+    std::vector<std::vector<T>> diagEigenValues(D.size(), std::vector<T>(D.size(), T(1)));
+    for(size_t i = 0; i < D.size(); ++i){
+        diagEigenValues[i][i] = cosh(D[i]);
+    }
+
+    res = V * diagEigenValues * inverse(V);
     return res;
 }
 
@@ -1019,15 +1100,15 @@ bool solveEVD(const std::vector<std::vector<T>> &a, std::vector<T> &D, std::vect
     }
 
     // Iterate by givensQR
-    int len = a.size();
+    size_t len = a.size();
     std::vector<T> eigen_values(len);
     std::vector<T> eigen_values_new(len);
-    for(int i = 0; i < len; ++i){
+    for(size_t i = 0; i < len; ++i){
         eigen_values[i] = H[i][i];
     }
 
     std::vector<std::vector<T>> Q, R, eigen_vector;
-    eigen_vector = eye(len, T(1));
+    eigen_vector = eye((int)len, T(1));
     int max_iteration = 1000;
     double delta = 0.000001;
     for(int i = 0; i < max_iteration; ++i){
@@ -1039,9 +1120,9 @@ bool solveEVD(const std::vector<std::vector<T>> &a, std::vector<T> &D, std::vect
             eigen_values_new[i] = H[i][i];
         }
 
-        double delta_sum = 0;
+        double delta_sum(0);
         for(int i = 0; i < len; ++i){
-            delta_sum += abs(eigen_values_new[i] - eigen_values[i]) / abs(eigen_values_new[i] + eigen_values[i]) / 2;
+            delta_sum += abs(eigen_values_new[i] - eigen_values[i]) / abs(eigen_values_new[i] + eigen_values[i]) * 2;
         }
 
         delta_sum /= (double)eigen_values.size();
@@ -1056,7 +1137,9 @@ bool solveEVD(const std::vector<std::vector<T>> &a, std::vector<T> &D, std::vect
     for(int i = 0; i < len; ++i){
         eigen_value_index[i] = i;
     }
-    std::sort(eigen_value_index.begin(), eigen_value_index.end(), [&](int x, int y){ return eigen_values_new[x] < eigen_values_new[y]; });
+    std::sort(eigen_value_index.begin(), eigen_value_index.end(), [&](int x, int y){
+        return abs(eigen_values_new[x]) < abs(eigen_values_new[y]);
+    });
 
     D.resize(len);
     V.resize(len, std::vector<T>(len));
@@ -1115,7 +1198,7 @@ std::vector<std::vector<T>> inverseUpper(const std::vector<std::vector<T>> &a){
 // Calculate the inverse matrix of lower triangular matrix
 template <class T>
 std::vector<std::vector<T>> inverseLower(const std::vector<std::vector<T>> &a){
-    int n = a.size();
+    int n = (int)a.size();
     std::vector<std::vector<T>> res = eye(n, T(1));
 
     for(int i = 0; i < n; ++i){
